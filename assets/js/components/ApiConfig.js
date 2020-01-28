@@ -6,6 +6,7 @@ export const ApiConfig = {
         remove: server_url + '/user_remove',
         list: server_url + '/user_list',
         edit: server_url + '/user_edit',
-        find: server_url + '/user_find'
+        find: server_url + '/user_find',
+        login: server_url + '/user_connection'
     }
 }   

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './components/App';
 import UserList from './components/UserList';
 import UserAdd from './components/UserAdd';
+import Login from './components/Login';
 import Router from 'vue-router'
 import { shallowMount } from '@vue/test-utils'
 /**
@@ -17,7 +18,8 @@ shallowMount(App, {
  */
 const routes = [
   { path: '/userlist', component: UserList },
-  { path: '/adduser', name:'UserAdd', component: UserAdd, props:true }
+  { path: '/adduser', name:'UserAdd', component: UserAdd, props:true },
+  { path: '/login', name:'Login', component: Login}
 ]
 /**
  * Router Vue object

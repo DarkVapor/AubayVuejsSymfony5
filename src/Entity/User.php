@@ -12,10 +12,13 @@ use App\Entity\EntityCommon\IPopulate;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use App\Validator\PasswordValidator;
+
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements IValidate, ICreate, IEntity,  IPopulate{
+class User implements ICreate, IEntity,  IPopulate {
 
     /**
      * @ORM\Id()
@@ -38,7 +41,14 @@ class User implements IValidate, ICreate, IEntity,  IPopulate{
      * @ORM\Column(type="string", length=255)
      */
     private $password;
+    
+    /**
+     * 
+     */
+    private $repassword;
 
+
+ 
     public function getId(): ?int {
         return $this->id;
     }
@@ -71,24 +81,23 @@ class User implements IValidate, ICreate, IEntity,  IPopulate{
         $this->password = $password;
 
         return $this;
+    
+    }
+
+    public function setRepassword(string $password): self {
+        $this->repassword = $password;
+
+        return $this;
     }
 
     public function toArray() {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'email' => $this->email,
-            'password' => $this->password,
-            'repassword' => $this->password,
+            'email' => $this->email
         ];
     }
 
-    /**
-     * Validation Method
-     */
-    public static function validate($_user): bool {
-        return true;
-    }
 
     /**
      * Factory Method 
@@ -97,25 +106,31 @@ class User implements IValidate, ICreate, IEntity,  IPopulate{
      */
     public static function create($_user): User {
         $user = new User();
-
+        
         $user->name = $_user['name'];
         $user->email = $_user['email'];
-        $user->password = $_user['password'];
+        $user->password = PasswordValidator::Encryption($_user['password']);
+        $user->repassword = $_user['repassword'];
         
 
         return $user;
     }
+
     /**
      * Population Method
      * @param array $data
      */
     public function populate(array $data){
-        if($this->validate($data))
+        
         foreach($data as $key => $value){
-            if(isset($this->$key)){
+            if(property_exists($this, $key)){
                 $this->$key = $value;
             }
+            
         }
+        if(isset($data['password']))
+            $this->password = PasswordValidator::Encryption($data['password']);
+     
     }
 
 }

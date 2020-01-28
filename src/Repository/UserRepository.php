@@ -18,6 +18,30 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
+    public function getTotalCount($filters = null){
+        $entityManager = $this->getEntityManager();
+        $qs ='   
+            SELECT count(u.id) 
+            FROM App\Entity\User u 
+        ';
+        
+        if(isset($filters['search'])){
+            $qs .= ' WHERE LOWER(CONCAT(u.name, u.email, u.id)) LIKE CONCAT(\'%\', LOWER(:search), \'%\')';
+        }
+
+        
+        if(isset($filters['field']) && isset($filters['direction'])){
+            $qs .= ' ORDER BY u.'.$filters['field'].' '.$filters['direction'];
+        }
+       
+        $query = $entityManager->createQuery($qs);
+      
+        if(isset($filters['search'])){
+            $query->setParameter('search', $filters['search']);
+        }
+        return $query->getSingleScalarResult();
+    }
+    
     public function filter($filters = null){
       
         $entityManager = $this->getEntityManager();
