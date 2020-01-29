@@ -16,7 +16,7 @@
       </transition>
       <transition name="fade">
         <div v-if="userError" class="ui red message">
-          {{userSavedMessage}}
+          {{userErrorMessage}}
           <i @click="closeError()" class="close icon"></i>
         </div>
       </transition>
@@ -148,34 +148,33 @@ export default {
       }
     },
     editUser: function(id) {
-      var ax = require("axios");
+      
+      this.user.id = this.id;
       let that = this;
-      ax.post("http://127.0.0.1:8000/user_edit", {
-        user: this.user
-      }).then(function(response) {
+      UserApi.update(this.user).then(function(response) {
         if (response.data.success == false) {
-          that.userSavedMessage = response.data.message;
+          that.userErrorMessage = response.data.message;
           that.userError = true;
           that.errors = response.data.errors;
         } else {
           that.userSavedMessage = response.data.message;
+          that.userError = false;
           that.userSaved = true;
           that.initForm();
         }
       });
     },
     addUser: function() {
-      var ax = require("axios");
+    
       let that = this;
-      ax.post("http://127.0.0.1:8000/user_add", {
-        user: this.user
-      }).then(function(response) {
+      UserApi.add(this.user).then(function(response) {
         if (response.data.success == false) {
-          that.userSavedMessage = response.data.message;
+          that.userErrorMessage = response.data.message;
           that.userError = true;
           that.errors = response.data.errors;
         } else {
           that.userSavedMessage = response.data.message;
+          that.userError = false;
           that.userSaved = true;
           that.initForm();
         }

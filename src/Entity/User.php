@@ -13,7 +13,9 @@ use App\Entity\EntityCommon\IPopulate;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\Validator\PasswordValidator;
-
+use DateTime;
+use DateTimeZone;
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -41,6 +43,17 @@ class User implements ICreate, IEntity,  IPopulate {
      * @ORM\Column(type="string", length=255)
      */
     private $password;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $token;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $tokenDate;
+
     
     /**
      * 
@@ -77,6 +90,10 @@ class User implements ICreate, IEntity,  IPopulate {
         return $this->password;
     }
 
+    public function getTokenDate(){
+        return $this->tokenDate;
+    }
+
     public function setPassword(string $password): self {
         $this->password = $password;
 
@@ -98,6 +115,16 @@ class User implements ICreate, IEntity,  IPopulate {
         ];
     }
 
+    public function setToken($token ){
+        $this->token = $token;
+        return $this;
+    }
+    
+    public function setTokenDate($date){
+        $this->tokenDate = $date;
+        return $this;
+    }
+
 
     /**
      * Factory Method 
@@ -111,6 +138,8 @@ class User implements ICreate, IEntity,  IPopulate {
         $user->email = $_user['email'];
         $user->password = PasswordValidator::Encryption($_user['password']);
         $user->repassword = $_user['repassword'];
+        $user->token = '';
+        $user->tokenDate = new DateTime('now');
         
 
         return $user;

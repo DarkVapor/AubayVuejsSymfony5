@@ -75,6 +75,10 @@
 </template>
 <script>
 import { UserApi } from "./UserApi";
+import { router } from "./../app";
+import { CookiesService } from './Cookies';
+
+
 export default {
   created: function() {
     this.userQuery();
@@ -107,10 +111,21 @@ export default {
      */
     userQuery: function() {
       var that = this;
+
+
+      if(CookiesService.get('token') == ""){
+        router.push("Login");
+      }
+
       UserApi.list(this.prepareFilters()).then(function(response) {
-        that.userlist = response.data.list;
-        that.userlistTotalCount = response.data.totalCount;
-        that.nbPages = Math.round(that.userlistTotalCount / that.limit)
+
+        if(response.data.success == true){
+          that.userlist = response.data.list;
+          that.userlistTotalCount = response.data.totalCount;
+          that.nbPages = Math.ceil((that.userlistTotalCount / that.limit));
+        }else{
+          router.push("Login");
+        }
       });
     },
     /**
@@ -153,8 +168,13 @@ export default {
     removeUser: function(id) {
       var that = this;
       UserApi.remove(id).then(function(response) {
-        that.userQuery();
-        that.message = 'User removed with success';
+        console.log(response);
+        if(response.data.success == true){
+          that.userQuery();
+          that.message = 'User removed with success';
+        }else{
+          router.push("Login");
+        }        
       });
     },
     /**

@@ -5,6 +5,10 @@ import UserAdd from './components/UserAdd';
 import Login from './components/Login';
 import Router from 'vue-router'
 import { shallowMount } from '@vue/test-utils'
+import VueCookies from 'vue-cookies'
+
+Vue.use(VueCookies)
+Vue.$cookies.config('30d')
 /**
  * Routing
  */
@@ -17,7 +21,7 @@ shallowMount(App, {
  * @type Array
  */
 const routes = [
-  { path: '/userlist', component: UserList },
+  { path: '/userlist', name:"UserList", component: UserList },
   { path: '/adduser', name:'UserAdd', component: UserAdd, props:true },
   { path: '/login', name:'Login', component: Login}
 ]
@@ -25,7 +29,7 @@ const routes = [
  * Router Vue object
  * @type Router
  */
-const router = new Router({
+export const router = new Router({
   routes:routes
 })
 /**
@@ -37,3 +41,5 @@ const app = new Vue({
     el: '#app',
     render: h => h(App)
 });
+
+export const VueInstance = Vue;

@@ -2,6 +2,8 @@
 
 namespace App\Validator;
 
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Exception;
 
 class UserValidator implements Base\IValidator
@@ -18,6 +20,18 @@ class UserValidator implements Base\IValidator
      * @var array
      */
     private $data;
+
+    /**
+     * 
+     *
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
     /**
      *
@@ -46,6 +60,7 @@ class UserValidator implements Base\IValidator
      */
     private function _email()
     {
+
         if ($this->data['email'] === "") {
             $this->errors['valid'] = false;
             $this->errors['email'] = [
@@ -53,6 +68,19 @@ class UserValidator implements Base\IValidator
                 "notvalid" => true
             ];
         }
+
+        if(!isset($this->data['id'])){
+            // add email duplication validation
+            $user = $this->userRepository->findOneBy(['email' => $this->data['email']]);
+            if($user instanceof User){
+                $this->errors['valid'] = false;
+                $this->errors['email'] = [
+                    "message" => "Email already exists",
+                    "notvalid" => true
+                ];
+            }
+        }
+
     }
     /**
      *
@@ -124,6 +152,11 @@ class UserValidator implements Base\IValidator
         ];
 
         $this->errors['email'] = [
+            "message" => "",
+            "notvalid" => false
+        ];
+
+        $this->errors['password'] = $this->errors['repassword'] = [
             "message" => "",
             "notvalid" => false
         ];
